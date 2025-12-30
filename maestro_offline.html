@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>🎼 Maestro Chatbot</title>
+  <style>
+    /* Body & general */
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2em;
+      color: #38bdf8;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    /* Chat box */
+    #chat {
+      height: 450px;
+      overflow-y: auto;
+      background: linear-gradient(180deg, #020617, #111827);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid #38bdf8;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      margin-bottom: 20px;
+    }
+
+    /* Messages */
+    .user-msg {
+      background: #2563eb;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      margin: 5px 0;
+      display: inline-block;
+      max-width: 80%;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .bot-msg {
+      background: #10b981;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      margin: 5px 0;
+      display: inline-block;
+      max-width: 80%;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    /* Input area */
+    #input-area {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      font-size: 1em;
+      box-shadow: inset 0 0 5px rgba(255,255,255,0.2);
+    }
+
+    /* 3D button style */
+    button {
+      background: linear-gradient(145deg, #38bdf8, #0ea5e9);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 1em;
+      padding: 12px 20px;
+      cursor: pointer;
+      box-shadow: 0 5px #0369a1, 0 10px 15px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+    }
+
+    button:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px #0369a1, 0 5px 10px rgba(0,0,0,0.3);
+    }
+
+    button:hover {
+      background: linear-gradient(145deg, #0ea5e9, #38bdf8);
+    }
+
+    /* Scrollbar style */
+    #chat::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #chat::-webkit-scrollbar-track {
+      background: #111827;
+      border-radius: 12px;
+    }
+
+    #chat::-webkit-scrollbar-thumb {
+      background: #38bdf8;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🎼 Maestro Chatbot</h2>
+
+<div id="chat"></div>
+
+<div id="input-area">
+  <input id="msg" placeholder="Ask Maestro..." />
+  <button onclick="send()">Send</button>
+</div>
+
+<script>
+function send() {
+  let msg = document.getElementById("msg").value;
+  if (!msg) return;
+
+  // Add user message to chat
+  const chatDiv = document.getElementById("chat");
+  chatDiv.innerHTML += `<p class="user-msg">You: ${msg}</p>`;
+
+  fetch("http://127.0.0.1:5000/maestro", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({message: msg})
+  })
+  .then(res => res.json())
+  .then(data => {
+    chatDiv.innerHTML += `<p class="bot-msg">Maestro: ${data.reply}</p>`;
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+  })
+  .catch(err => {
+    chatDiv.innerHTML += `<p class="bot-msg">Maestro: Sorry, I cannot respond right now.</p>`;
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+  });
+
+  document.getElementById("msg").value = "";
+}
+</script>
+
+</body>
+</html>
